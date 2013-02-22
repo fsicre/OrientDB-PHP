@@ -11,6 +11,7 @@
  */
 
 $rootPassword = '60F3D52B4374C22B19F2EA5AD2812A45FB1C34985C2532D60E267AADB9E3E130';
+$rootPassword = 'E1E7C5F7D645B20234AD2CD916B33FA5E0AE46F15C5653C8A0881238A3C33E3E';
 $dbName = 'example';
 $clusterName = 'default';
 
@@ -60,12 +61,29 @@ try {
             $clusterID = $cluster->id;
         }
     }
+    if (empty($clusterID)) {
+        throw new Exception("cluster {$clusterName} not found in \$clusters returns by \$db->DBOpen()");
+    }
 
     echo 'Create record...' . PHP_EOL;
     $record = new OrientDBRecord();
     $record->data->FirstName = 'Bruce';
     $record->data->LastName = 'Wayne';
     $record->data->appearance = 1938;
+    $record->data->addresses = array( // embedded document
+        "shipping" => array(
+            'Street' => '1, Boulevard de la plage',
+            'ZipCode' => '0600',
+            'City' => 'Nice',
+            'Country' => 'France',
+        ),
+        "billing" => array(
+            'Street' => '12, Rue romantique',
+            'ZipCode' => '75001',
+            'City' => 'Paris',
+            'Country' => 'France',
+        ),
+    );
 
     $recordPos = $db->recordCreate($clusterID, $record);
 
@@ -77,6 +95,9 @@ try {
     echo 'Load record result: ' . $recordLoaded . PHP_EOL . PHP_EOL;
 
     printf('%1$s %2$s first appears in %3$d' . PHP_EOL . PHP_EOL, $recordLoaded->data->FirstName, $recordLoaded->data->LastName, $recordLoaded->data->appearance);
+
+    print_r($record->data->addresses); // embedded document correctly decoded
+    echo "\n";
 
     echo 'Update record...' . PHP_EOL;
 
