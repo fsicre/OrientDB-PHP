@@ -84,6 +84,21 @@ try {
             'Country' => 'France',
         ),
     );
+    $record->data->deep = array( // embedded document
+        array(
+            array(
+                "pp" => 11,
+                "qq" => array(
+                    12,
+                    "ccc",
+                    true,
+                    false,
+                    array("a", "b", "c"),
+                    array("a" => 1, "b" => 2, "c" => 3),
+                )
+            )
+        )
+    );
 
     $recordPos = $db->recordCreate($clusterID, $record);
 
@@ -97,6 +112,7 @@ try {
     printf('%1$s %2$s first appears in %3$d' . PHP_EOL . PHP_EOL, $recordLoaded->data->FirstName, $recordLoaded->data->LastName, $recordLoaded->data->appearance);
 
     print_r($record->data->addresses); // embedded document correctly decoded
+    print_r($record->data->deep); // embedded document correctly decoded
     echo "\n";
 
     echo 'Update record...' . PHP_EOL;
